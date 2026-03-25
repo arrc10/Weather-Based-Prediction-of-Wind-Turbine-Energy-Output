@@ -1,1 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AeroPredict: Wind Energy Forecaster</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ── CSS Reset & Variables ─────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #ECEAE3;
+      --card-bg: #FFFFFF;
+      --card-alt: #F4F2EC;
+      --ink: #1C1B19;
+      --ink-muted: #6B6860;
+      --ink-faint: #9B9890;
+      --accent: #1C1B19;
+      --result-bg: #4A5240;
+      --result-text: #ECEAE3;
+      --border: rgba(28, 27, 25, 0.10);
+      --input-bg: #F7F5EF;
+      --btn-hover: #3A3835;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-card: 0 2px 20px rgba(28, 27, 25, 0.07);
+      --shadow-hover: 0 8px 32px rgba(28, 27, 25, 0.12);
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'DM Sans', system-ui, sans-serif;
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html,
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      font-family: var(--font-sans);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Topbar ────────────────────────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--ink);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .brand-name {
+      font-family: var(--font-sans);
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.2px;
+      color: var(--ink);
+    }
+
+    .brand-name span {
+      font-weight: 300;
+    }
+
+    .tagline {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    /* ── Main layout ───────────────────────────────────────────────────── */
+    .main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 64px 48px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: stretch;
+    }
+
+    /* ── Left column ───────────────────────────────────────────────────── */
+    .hero-heading {
+      font-family: var(--font-serif);
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .hero-subheading {
+      font-family: var(--font-serif);
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--ink-muted);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .hero-desc {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--ink-muted);
+      max-width: 440px;
+      margin-bottom: 20px;
+    }
+
+    /* ── Weather card ──────────────────────────────────────────────────── */
+    .weather-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 24px 26px 28px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border);
+      transition: box-shadow var(--transition);
+    }
+
+    .weather-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .weather-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .weather-card-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .cloud-icon {
+      color: var(--ink-faint);
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-wrapper .search-ico {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-faint);
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 11px 14px 11px 36px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--input-bg);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .search-input::placeholder {
+      color: var(--ink-faint);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    .btn-check {
+      padding: 11px 20px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-check:hover {
+      background: var(--btn-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-check:active {
+      transform: translateY(0);
+    }
+
+    .btn-check.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* ── Autocomplete ──────────────────────────────────────────────────── */
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-hover);
+      margin-top: 4px;
+      z-index: 1000;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 13.5px;
+      color: var(--ink);
+      transition: background var(--transition);
+      border-bottom: 1px solid rgba(28, 27, 25, 0.05);
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-item:hover {
+      background: var(--input-bg);
+      color: var(--accent);
+    }
+
+    /* Weather grid */
+    .weather-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .weather-stat {
+      background: var(--card-alt);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-value {
+      font-family: var(--font-sans);
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.3px;
+    }
+
+    .stat-value.empty {
+      color: var(--ink-faint);
+      font-size: 15px;
+    }
+
+    /* ── Right column – Predict card ───────────────────────────────────── */
+    .predict-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 30px 30px 28px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border);
+      transition: box-shadow var(--transition);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .predict-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .predict-title {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .predict-subtitle {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      margin-bottom: 26px;
+    }
+
+    .inputs-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .field-input-wrap {
+      position: relative;
+    }
+
+    .field-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--ink-muted);
+      pointer-events: none;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 13px 14px 13px 34px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--input-bg);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .field-input:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    .btn-predict {
+      width: 100%;
+      padding: 15px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      margin-bottom: 18px;
+    }
+
+    .btn-predict:hover {
+      background: var(--btn-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(28, 27, 25, 0.18);
+    }
+
+    .btn-predict:active {
+      transform: translateY(0);
+    }
+
+    .btn-predict.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* Result box */
+    .result-box {
+      background: var(--result-bg);
+      border-radius: var(--radius-md);
+      padding: 28px 24px;
+      text-align: center;
+      display: none;
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      margin-bottom: 24px;
+    }
+
+    .result-box.visible {
+      display: block;
+    }
+
+    .result-bg-anim {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -100%;
+      width: 50%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+      transform: skewX(-20deg);
+      animation: sweep 2.5s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes sweep {
+      0% {
+        left: -100%;
+      }
+
+      50% {
+        left: 200%;
+      }
+
+      100% {
+        left: 200%;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .result-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(236, 234, 227, 0.60);
+      margin-bottom: 10px;
+    }
+
+    .result-value {
+      font-family: var(--font-sans);
+      font-size: clamp(38px, 5vw, 56px);
+      font-weight: 300;
+      color: var(--result-text);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .result-value span {
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0;
+      vertical-align: super;
+      margin-left: 3px;
+    }
+
+    .result-note {
+      font-size: 11px;
+      color: rgba(236, 234, 227, 0.55);
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    .model-note {
+      font-size: 11px;
+      color: var(--ink-faint);
+      line-height: 1.6;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .model-note::before {
+      content: "○";
+      flex-shrink: 0;
+      font-size: 10px;
+      margin-top: 1px;
+    }
+
+    /* ── Error toast ───────────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #3a2020;
+      color: #ffeaea;
+      padding: 12px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Spinner ───────────────────────────────────────────────────────── */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2.5px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ── Footer ────────────────────────────────────────────────────────── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--ink-muted);
+      font-size: 13px;
+    }
+
+    .footer p {
+      margin: 0;
+    }
+
+    .footer p strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: var(--ink-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .topbar {
+        padding: 16px 24px;
+      }
+
+      .main {
+        grid-template-columns: 1fr;
+        padding: 40px 24px 60px;
+        gap: 32px;
+      }
+
+      .footer {
+        padding: 24px;
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .inputs-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Topbar ──────────────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <a class="brand" href="/">
+      <div class="brand-icon">
+        <!-- Wind turbine icon -->
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 12 L12 3 C12 3 8 6 8 9 C8 11 10 12 12 12Z" fill="white" opacity="0.9" />
+          <path d="M12 12 L20.6 16.5 C20.6 16.5 19 12 16 10.5 C14 9.5 12 11 12 12Z" fill="white" opacity="0.7" />
+          <path d="M12 12 L3.4 16.5 C3.4 16.5 7 19 10 18 C12 17.3 12.5 14.5 12 12Z" fill="white" opacity="0.55" />
+          <circle cx="12" cy="12" r="1.6" fill="white" />
+          <line x1="12" y1="13.6" x2="12" y2="21" stroke="white" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+      </div>
+      <span class="brand-name">Aero<span>Predict</span></span>
+    </a>
+    <p class="tagline">Renewable Energy Management System</p>
+  </header>
+
+  <!-- ── Main ────────────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Left column -->
+    <div class="left-col">
+      <h1 class="hero-heading">Wind Turbine Energy<br>Prediction</h1>
+      <h2 class="hero-subheading">Based on Weather<br>Conditions</h2>
+      <p class="hero-desc">
+        Renewable energy, such as wind and solar energy, plays an increasing role
+        in the supply of energy worldwide. This tool helps operators forecast energy
+        production to optimize grid integration and maintenance planning.
+      </p>
+
+      <!-- Weather card -->
+      <div class="weather-card">
+        <div class="weather-card-header">
+          <p class="weather-card-title">Local Weather Conditions <span id="detectedCity"
+              style="margin-left: 8px; font-size: 14px;"></span></p>
+          <svg class="cloud-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.5">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+          </svg>
+        </div>
+
+        <div class="search-row">
+          <div class="search-wrapper">
+            <span class="search-ico">⌕</span>
+            <input class="search-input" id="cityInput" type="text" placeholder="Enter city name or 6-digit pincode…"
+              autocomplete="off" />
+            <div id="autocompleteList" class="autocomplete-list"></div>
+          </div>
+          <button class="btn-check" id="checkWeatherBtn" onclick="fetchWeather()">Check</button>
+        </div>
+
+        <div class="weather-grid" id="weatherGrid" style="display: none;">
+          <div class="weather-stat">
+            <p class="stat-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+              </svg>
+              Temperature
+            </p>
+            <p class="stat-value empty" id="tempDisplay">—</p>
+          </div>
+          <div class="weather-stat">
+            <p class="stat-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z" />
+                <circle cx="12" cy="9" r="2.5" />
+              </svg>
+              Humidity
+            </p>
+            <p class="stat-value empty" id="humidDisplay">—</p>
+          </div>
+          <div class="weather-stat">
+            <p class="stat-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="12" x2="14" y2="14" />
+              </svg>
+              Pressure
+            </p>
+            <p class="stat-value empty" id="pressDisplay">—</p>
+          </div>
+          <div class="weather-stat">
+            <p class="stat-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+              </svg>
+              Wind Speed
+            </p>
+            <p class="stat-value empty" id="windDisplay">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column – Predict card -->
+    <div class="right-col">
+      <div class="predict-card">
+        <h3 class="predict-title">Predict Wind Energy</h3>
+        <p class="predict-subtitle">Enter turbine parameters to estimate output</p>
+
+        <div class="inputs-row">
+          <div class="field-group">
+            <label class="field-label">Theoretical Power (KWh)</label>
+            <div class="field-input-wrap">
+              <span class="field-icon">⚡</span>
+              <input class="field-input" id="theorPower" type="number" placeholder="1500" min="0" max="5000" step="1" />
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Wind Speed (m/s)</label>
+            <div class="field-input-wrap">
+              <span class="field-icon">≋</span>
+              <input class="field-input" id="windSpeed" type="number" placeholder="4.12" min="0" max="25" step="0.01" />
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-predict" id="predictBtn" onclick="generatePrediction()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          Generate Prediction
+        </button>
+
+        <!-- Result -->
+        <div class="result-box" id="resultBox">
+          <div class="result-bg-anim"></div>
+          <p class="result-label">Estimated Energy Output</p>
+          <p class="result-value" id="resultValue">
+            0<span>kWh</span>
+          </p>
+          <p class="result-note">Based on current environmental parameters</p>
+        </div>
+
+        <p class="model-note">
+          Predictions are generated using a Random Forest regression model trained on
+          historical wind farm data.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>Done by <strong>AKHILESH ROSHAN K V</strong></p>
+    <div class="footer-links">
+      <a href="#" target="_blank">Document</a>
+      <a href="#" target="_blank">Video Demo</a>
+      <a href="#" target="_blank">Data</a>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ── JavaScript ─────────────────────────────────────────────────────────── -->
+  <script>
+    // ── Toast helper ──────────────────────────────────────────────────────────
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3500);
+    }
+
+    // ── Fetch weather ─────────────────────────────────────────────────────────
+    async function fetchWeather() {
+      const query = document.getElementById('cityInput').value.trim();
+      if (!query) { showToast('Please enter a city name or pincode.'); return; }
+
+      const btn = document.getElementById('checkWeatherBtn');
+      btn.classList.add('loading');
+      btn.textContent = '…';
+
+      setWeatherDisplays(null);           // clear old data
+
+      try {
+        const resp = await fetch('/weather', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+        const data = await resp.json();
+
+        if (!resp.ok || data.error) {
+          showToast(data.error || 'Could not fetch weather data.');
+          return;
+        }
+
+        setWeatherDisplays(data);
+
+        // Auto-fill wind speed into prediction form
+        document.getElementById('windSpeed').value = data.wind_speed;
+
+      } catch (err) {
+        showToast('Network error. Is Flask running?');
+      } finally {
+        btn.classList.remove('loading');
+        btn.textContent = 'Check';
+      }
+    }
+
+    function setWeatherDisplays(data) {
+      const weatherGrid = document.getElementById('weatherGrid');
+
+      const empty = (id) => {
+        const el = document.getElementById(id);
+        el.textContent = '—';
+        el.className = 'stat-value empty';
+      };
+
+      if (!data) {
+        ['tempDisplay', 'humidDisplay', 'pressDisplay', 'windDisplay'].forEach(empty);
+        document.getElementById('detectedCity').textContent = '';
+        if (weatherGrid) weatherGrid.style.display = 'none';
+        return;
+      }
+
+      if (weatherGrid) weatherGrid.style.display = 'grid';
+
+      const set = (id, val) => {
+        const el = document.getElementById(id);
+        el.textContent = val;
+        el.className = 'stat-value';
+      };
+
+      set('tempDisplay', `${data.temp} °C`);
+      set('humidDisplay', `${data.humidity}%`);
+      set('pressDisplay', `${data.pressure} hPa`);
+      set('windDisplay', `${data.wind_speed} m/s`);
+
+      if (data.city && !/^\d+$/.test(data.city)) {
+        document.getElementById('detectedCity').innerHTML = `<span style="color: var(--ink-faint); font-weight: 400;">-</span> <strong style="color: var(--ink); font-weight: 700; font-size: 14.5px;">${data.city}</strong>`;
+      } else {
+        document.getElementById('detectedCity').innerHTML = '';
+      }
+    }
+
+    // ── Generate prediction ───────────────────────────────────────────────────
+    async function generatePrediction() {
+      const theoretical_power = parseFloat(document.getElementById('theorPower').value);
+      const wind_speed = parseFloat(document.getElementById('windSpeed').value);
+
+      if (isNaN(theoretical_power) || isNaN(wind_speed)) {
+        showToast('Please enter valid numbers for both fields.');
+        return;
+      }
+      if (theoretical_power <= 0 || wind_speed < 0) {
+        showToast('Values must be positive numbers.');
+        return;
+      }
+
+      const btn = document.getElementById('predictBtn');
+      btn.classList.add('loading');
+      btn.innerHTML = `<div class="spinner"></div> Predicting…`;
+
+      const resultBox = document.getElementById('resultBox');
+      resultBox.classList.remove('visible');
+
+      try {
+        const resp = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ theoretical_power, wind_speed })
+        });
+        const data = await resp.json();
+
+        if (!resp.ok || data.error) {
+          showToast(data.error || 'Prediction failed.');
+          return;
+        }
+
+        // Animate counter
+        animateValue('resultValue', 0, data.prediction, 900);
+        resultBox.classList.add('visible');
+
+      } catch (err) {
+        showToast('Network error. Is Flask running?');
+      } finally {
+        btn.classList.remove('loading');
+        btn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          Generate Prediction`;
+      }
+    }
+
+    function animateValue(id, from, to, duration) {
+      const el = document.getElementById(id);
+      const start = performance.now();
+      const step = (ts) => {
+        const progress = Math.min((ts - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);  // ease-out cubic
+        const val = from + (to - from) * eased;
+        el.innerHTML = `${val.toFixed(2)}<span>kWh</span>`;
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    // ── Autocomplete & Input Logic ───────────────────────────────────────────
+    const cityInput = document.getElementById('cityInput');
+    const autocompleteList = document.getElementById('autocompleteList');
+    let debounceTimer;
+
+    cityInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        autocompleteList.style.display = 'none';
+        fetchWeather();
+      }
+    });
+
+    cityInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+
+      // Auto-detect 6-digit pincode
+      if (val.length === 6 && /^\d+$/.test(val)) {
+        autocompleteList.style.display = 'none';
+        fetchWeather();
+        return;
+      }
+
+      clearTimeout(debounceTimer);
+      if (val.length < 2) {
+        autocompleteList.style.display = 'none';
+        return;
+      }
+
+      debounceTimer = setTimeout(async () => {
+        try {
+          const resp = await fetch('/search_city', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: val })
+          });
+          const suggestions = await resp.json();
+
+          autocompleteList.innerHTML = '';
+          if (suggestions.length === 0) {
+            autocompleteList.style.display = 'none';
+            return;
+          }
+
+          suggestions.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'autocomplete-item';
+            div.textContent = item.label;
+            div.addEventListener('click', () => {
+              cityInput.value = item.name;
+              autocompleteList.style.display = 'none';
+              fetchWeather();
+            });
+            autocompleteList.appendChild(div);
+          });
+          autocompleteList.style.display = 'block';
+        } catch (err) {
+          console.error("Autocomplete error:", err);
+        }
+      }, 300);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-wrapper')) {
+        autocompleteList.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+
+</html>
