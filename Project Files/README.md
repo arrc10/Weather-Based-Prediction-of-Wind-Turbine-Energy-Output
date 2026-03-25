@@ -106,7 +106,7 @@ python test_model.py
 
 ## Usage
 
-1. **Weather Check**: Enter a city name (e.g., `Nellore`) or a 6-digit Indian pincode (e.g., `524001`) and click **Check**. Wind speed is auto-filled into the prediction form.
+1. **Weather Check**: Enter a city name (e.g., `Hyderabad`) or a 6-digit Indian pincode (e.g., `500072`) and click **Check**. Wind speed is auto-filled into the prediction form.
 2. **Predict**: Enter Theoretical Power (KWh) and Wind Speed (m/s), then click **Generate Prediction**. The estimated energy output appears in the olive green result box.
 
 ---
@@ -115,7 +115,7 @@ python test_model.py
 
 | Method | Route      | Body (JSON)                              | Returns                     |
 |--------|------------|------------------------------------------|-----------------------------|
-| POST   | /weather   | `{ "query": "Nellore" }`                 | temp, humidity, pressure, wind_speed |
+| POST   | /weather   | `{ "query": "Hyderabad" }`                 | temp, humidity, pressure, wind_speed |
 | POST   | /predict   | `{ "theoretical_power": 1500, "wind_speed": 4.12 }` | `{ "prediction": 1380.97 }` |
 
 ---
