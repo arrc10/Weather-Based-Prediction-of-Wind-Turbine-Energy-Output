@@ -6,7 +6,7 @@ Welcome to the repository for **AeroPredict**, a machine learning project design
 
 * **[`Project Files/`](./Project%20Files/)**: Contains the main source code, data preprocessing scripts, the Flask web application, and the detailed technical `README.md`.
 * **[`Document/`](./Document/)**: Contains the comprehensive project report (`AeroPredict_Report.pdf`).
-* **['Video Demo/'_](./Video Demo/)**: Contains a visual walkthrough of the AeroPredict web application and its real-time prediction capabilities('Demo.mp4').
+* **[`Video Demo/`](./Video%20Demo/)**: Contains a visual walkthrough of the AeroPredict web application and its real-time prediction capabilities('Demo.mp4').
 
 ## 🚀 Getting Started
 
@@ -22,4 +22,5 @@ To run the application, view the installation instructions, or explore the syste
 **Abdul Muqeem Shaik**
 **Abhilash Vadlapudi**
 **Ajay Thallapaka**
+
 
