@@ -1,6 +1,6 @@
 # AeroPredict: Wind Turbine Energy Prediction 🌬️⚡
 
-[cite_start]Welcome to the repository for **AeroPredict**, a machine learning project designed to predict wind turbine energy output using historical and real-time weather data[cite: 38]. 
+[cite_start] Welcome to the repository for **AeroPredict**, a machine learning project designed to predict wind turbine energy output using historical and real-time weather data[cite: 38]. 
 
 ## 📁 Repository Structure
 
