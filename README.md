@@ -18,9 +18,9 @@ To run the application, view the installation instructions, or explore the syste
 
 **Project ID:** LTVIP2026TMIDS88766
 
-**Akhilesh Roshan K V** 
-**Abdul Muqeem Shaik**
-**Abhilash Vadlapudi**
-**Ajay Thallapaka**
+* **Akhilesh Roshan K V**
+* **Abdul Muqeem Shaik**
+* **Abhilash Vadlapudi**
+* **Ajay Thallapaka**
 
 
